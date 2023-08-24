@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Project Details</title>
+</head>
+<body>
+    {% if user_type == 'manager' %}
+    <a href="/createproject">Create Project</a>
+    {% endif %}
+    {% if user_type == 'qa' %}
+    <a href="/projects">All Projects</a>
+    <a href="/newbug">Report Bug</a>
+    <a href="/qabugs">All Bugs</a>
+    {% endif %}
+    <a href="/logoutaccount">Logout</a>
+    <br>
+    <h4>All Projects</h4>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Developers</th>
+                <th>QA Members</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for project in projects %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>
+                    {% if project.developer.all %}
+                    {% for developer in project.developer.all %}
+                    {{ developer.username }}<br>
+                    {% endfor %}
+                    {% else %}
+                    None
+                    {% endif %}
+                </td>
+                <td>
+                    {% if project.qa.all %}
+                    {% for qa_member in project.qa.all %}
+                    {{ qa_member.username }}<br>
+                    {% endfor %}
+                    {% else %}
+                    None
+                    {% endif %}
+                </td>
+                <td>
+                    {% if user_type == 'manager' %}
+                    <a href="/edit/{{ project.name }}">Edit</a> |
+                    <a href="/delete/{{ project.name }}">Delete</a> | 
+                    <a href="/assigndeveloperdetail/{{ project.name }}">Assign Developer</a> |
+                    <a href="/assignqadetail/{{ project.name }}">Assign QA</a> |
+                    <a href="/dischargedeveloperdetail/{{ project.name }}">Discharge Developer</a>  <!-- Added URL -->
+                    {% elif user_type == 'qa' %}
+                    <a href="/reportbug/{{ project.name }}">Report Bug</a>
+                    {% endif %}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

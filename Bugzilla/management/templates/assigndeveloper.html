@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>Assign Developer</title>
+</head>
+<body>
+	<a href="/projects">Create Project</a>
+	<form method="POST" action="/assigndeveloper/{{ project.name }}">
+		{% csrf_token %}
+		<label>Project Name</label>
+		<p>{{ project.name }}</p>
+		<label>Available Developers</label>
+		{% if users %}
+		<select name="developer">
+			{% for user in users %}
+			<option value="{{ user.username }}">{{ user.username }}</option>
+			{% endfor %}
+		</select>
+		<button type="submit">Assign Developer</button>
+		{% else %}
+		<p>No Developer Available</p>
+		<a href="/projects">Go to Home</a>
+		{% endif %}
+
+	</form>
+
+</body>
+</html>

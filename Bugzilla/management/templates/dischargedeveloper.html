@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Discharge Developer</title>
+</head>
+<body>
+    <a href="/projects">Go Back to Projects</a>
+    <form method="POST" action="/dischargedeveloper/{{ project.name }}">
+        {% csrf_token %}
+        <label>Project Name</label>
+        <p>{{ project.name }}</p>
+        <label>Assigned Developers</label>
+        {% if assigned_developers %}
+        <select name="developer">
+            {% for developer in assigned_developers %}
+            <option value="{{ developer.username }}">{{ developer.username }}</option>
+            {% endfor %}
+        </select>
+        <button type="submit">Discharge Developer</button>
+        {% else %}
+        <p>No Developers Assigned</p>
+        {% endif %}
+    </form>
+</body>
+</html>

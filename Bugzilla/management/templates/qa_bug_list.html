@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>QA Bug List</title>
+</head>
+<body>
+    <a href="/projects">All Projects</a>
+    <a href="/newbug">Report Bug</a>
+    <a href="/qabugs">All Bugs</a>
+    <a href="/logoutaccount">Logout</a>
+    <h2>Your Bug List</h2>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Start Date</th>
+                <th>Deadline</th>
+                <th>Project</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bug in bugs %}
+            <tr>
+                <td>{{ bug.title }}</td>
+                <td>{{ bug.description }}</td>
+                <td>{{ bug.get_type_display }}</td>
+                <td>{{ bug.get_status_display }}</td>
+                <td>{{ bug.start_date }}</td>
+                <td>{{ bug.deadline }}</td>
+                <td>{{ bug.project.name }}</td>
+                <td>
+                    <a href="{% url 'edit bug' bug.id %}">Edit</a>
+                    <a href="{% url 'delete bug' bug.id %}">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if project %}
+        <a href="{% url 'project bug' project.name %}">Back to Project</a>
+    {% endif %}
+</body>
+</html>

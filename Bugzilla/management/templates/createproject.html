@@ -1,0 +1,17 @@
+
+<title>
+	Create Project
+</title>
+
+<a href="/projects">Go to Dashboard</a>
+<h2>Create Project</h2>
+
+<form method="post" action="{% url 'create project' %}">
+    {% csrf_token %}
+    <label>Project Name</label>
+    <input type="text" name="name" required><br>
+    <button type="submit">Create Project</button>
+</form>
+
+{{message}}
+
