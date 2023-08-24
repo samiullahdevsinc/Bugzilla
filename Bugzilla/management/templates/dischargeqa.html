@@ -3,31 +3,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Assign Developer</title>
+    <title>Discharge QA</title>
     <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
     <div class="mx-auto max-w-md p-6 bg-white rounded shadow-md mt-8">
         <a href="/projects" class="text-blue-500 hover:underline">Go Back to Projects</a>
-        <form method="POST" action="/assigndeveloper/{{ project.name }}" class="mt-4">
+        <form method="POST" action="/dischargeqa/{{ project.name }}" class="mt-4">
             {% csrf_token %}
             <div class="mb-4">
                 <label class="block text-sm font-medium">Project Name</label>
                 <p>{{ project.name }}</p>
             </div>
             <div class="mb-4">
-                <label class="block text-sm font-medium">Available Developers</label>
-                {% if users %}
-                <select name="developer" class="w-full px-4 py-2 rounded border">
-                    {% for user in users %}
-                    <option value="{{ user.username }}">{{ user.username }}</option>
+                <label class="block text-sm font-medium">Assigned QAs</label>
+                {% if assigned_qas %}
+                <select name="qa" class="w-full px-4 py-2 rounded border">
+                    {% for qa in assigned_qas %}
+                    <option value="{{ qa.username }}">{{ qa.username }}</option>
                     {% endfor %}
                 </select>
-                <button type="submit" class="w-full mt-2 bg-green-500 text-white py-2 rounded hover:bg-green-600">Assign Developer</button>
+                <button type="submit" class="w-full mt-2 bg-red-500 text-white py-2 rounded hover:bg-red-600">Discharge QA</button>
                 {% else %}
-                <p>No Developer Available</p>
-                <a href="/projects" class="text-blue-500 hover:underline mt-2 block">Go to Home</a>
+                <p>No QAs Assigned</p>
                 {% endif %}
             </div>
         </form>

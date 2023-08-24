@@ -3,27 +3,35 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Assign Qa</title>
+    <title>Assign QA</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <a href="/projects">All Project</a>
-    <a href="/createproject">Create Project</a>
-    <form method="POST" action="/assignqa/{{ project.name }}">
-        {% csrf_token %}
-        <label>Project Name</label>
-        <p>{{ project.name }}</p>
-        <label>Available QAs</label>
-        {% if available_qas %}
-        <select name="qa">
-            {% for user in available_qas %}
-            <option value="{{ user.username }}">{{ user.username }}</option>
-            {% endfor %}
-        </select>
-        <button type="submit">Assign Qa</button>
-        {% else %}
-        <p>No Available Qa</p>
-        <a href="/projects">Go to Home</a>
-        {% endif %}
-    </form>
+<body class="bg-gray-100">
+    <div class="mx-auto max-w-md p-6 bg-white rounded shadow-md mt-8">
+        <a href="/projects" class="text-blue-500 hover:underline">Go Back to Projects</a>
+        <a href="/createproject" class="text-blue-500 hover:underline">Create Project</a>
+        <form method="POST" action="/assignqa/{{ project.name }}" class="mt-4">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Project Name</label>
+                <p>{{ project.name }}</p>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium">Available QAs</label>
+                {% if available_qas %}
+                <select name="qa" class="w-full px-4 py-2 rounded border">
+                    {% for user in available_qas %}
+                    <option value="{{ user.username }}">{{ user.username }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="w-full mt-2 bg-green-500 text-white py-2 rounded hover:bg-green-600">Assign QA</button>
+                {% else %}
+                <p>No Available QA</p>
+                <a href="/projects" class="text-blue-500 hover:underline mt-2 block">Go to Home</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
 </body>
 </html>

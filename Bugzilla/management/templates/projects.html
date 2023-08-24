@@ -4,65 +4,74 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Project Details</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    {% if user_type == 'manager' %}
-    <a href="/createproject">Create Project</a>
-    {% endif %}
-    {% if user_type == 'qa' %}
-    <a href="/projects">All Projects</a>
-    <a href="/newbug">Report Bug</a>
-    <a href="/qabugs">All Bugs</a>
-    {% endif %}
-    <a href="/logoutaccount">Logout</a>
-    <br>
-    <h4>All Projects</h4>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Developers</th>
-                <th>QA Members</th>
-                <th>Action</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for project in projects %}
-            <tr>
-                <td>{{ project.name }}</td>
-                <td>
-                    {% if project.developer.all %}
-                    {% for developer in project.developer.all %}
-                    {{ developer.username }}<br>
-                    {% endfor %}
-                    {% else %}
-                    None
-                    {% endif %}
-                </td>
-                <td>
-                    {% if project.qa.all %}
-                    {% for qa_member in project.qa.all %}
-                    {{ qa_member.username }}<br>
-                    {% endfor %}
-                    {% else %}
-                    None
-                    {% endif %}
-                </td>
-                <td>
-                    {% if user_type == 'manager' %}
-                    <a href="/edit/{{ project.name }}">Edit</a> |
-                    <a href="/delete/{{ project.name }}">Delete</a> | 
-                    <a href="/assigndeveloperdetail/{{ project.name }}">Assign Developer</a> |
-                    <a href="/assignqadetail/{{ project.name }}">Assign QA</a> |
-                    <a href="/dischargedeveloperdetail/{{ project.name }}">Discharge Developer</a>  <!-- Added URL -->
-                    {% elif user_type == 'qa' %}
-                    <a href="/reportbug/{{ project.name }}">Report Bug</a>
-                    {% endif %}
-                </td>
-
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<body class="bg-gray-100 flex h-screen">
+    <div class="w-full bg-white rounded shadow-md m-6">
+        <div class="flex items-center justify-between ">
+            <h4 class="text-4xl mb-4 ml-4  font-semibold">All Projects</h4>
+            <div>
+                {% if user_type == 'manager' %}
+                <a href="/createproject" class="bg-green-500 text-white px-4 py-2 rounded">Create Project</a>
+                {% endif %}
+                {% if user_type == 'qa' %}
+                <a href="/projects" class="bg-blue-500 text-white px-4 py-2 rounded">All Projects</a>
+                <a href="/newbug" class="bg-blue-500 text-white px-4 py-2 rounded">Report Bug</a>
+                <a href="/qabugs" class="bg-blue-500 text-white px-4 py-2 rounded">All Bugs</a>
+                {% endif %}
+                <a href="/logoutaccount" class="bg-red-500 text-white px-4 py-2 mr-4 rounded">Logout</a>
+            </div>
+        </div>
+        <table class="w-full border border-collapse  ">
+            <thead>
+                <tr class="bg-gray-200 text-gray-700">
+                    <th class="py-2 px-4 border">Name</th>
+                    <th class="py-2 px-4 border">Developers</th>
+                    <th class="py-2 px-4 border">QA Members</th>
+                    <th class="py-2 px-4 border">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for project in projects %}
+                <tr>
+                    <td class="py-2 px-4 border">{{ project.name }}</td>
+                    <td class="py-2 px-4 border">
+                        {% if project.developer.all %}
+                        {% for developer in project.developer.all %}
+                        {{ developer.username }}<br>
+                        {% endfor %}
+                        {% else %}
+                        None
+                        {% endif %}
+                    </td>
+                    <td class="py-2 px-4 border">
+                        {% if project.qa.all %}
+                        {% for qa_member in project.qa.all %}
+                        {{ qa_member.username }}<br>
+                        {% endfor %}
+                        {% else %}
+                        None
+                        {% endif %}
+                    </td>
+                    <td class="py-2 px-4 border">
+                        <div class="flex space-x-2">
+                            {% if user_type == 'manager' %}
+                            <a href="/edit/{{ project.name }}" class="flex-shrink-0 bg-green-500 text-white px-2 py-1 rounded">Edit</a>
+                            <a href="/delete/{{ project.name }}" class="flex-shrink-0 bg-red-500 text-white px-2 py-1 rounded">Delete</a>
+                            <a href="/assigndeveloperdetail/{{ project.name }}" class="flex-shrink-0 bg-green-500 text-white px-2 py-1 rounded">Assign Developer</a>
+                            <a href="/assignqadetail/{{ project.name }}" class="flex-shrink-0 bg-green-500 text-white px-2 py-1 rounded">Assign QA</a>
+                            <a href="/dischargedeveloperdetail/{{ project.name }}" class="flex-shrink-0 bg-red-500 text-white px-2 py-1 rounded">Discharge Developer</a>
+                            <a href="/dischargeqadetail/{{ project.name }}" class="flex-shrink-0 bg-red-500 text-white px-2 py-1 rounded">Discharge QA</a>                            
+                            {% elif user_type == 'qa' %}
+                            <a href="/reportbug/{{ project.name }}" class="flex-shrink-0 bg-blue-500 text-white px-2 py-1 rounded">Report Bug</a>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 </body>
 </html>

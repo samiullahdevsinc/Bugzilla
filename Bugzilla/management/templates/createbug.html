@@ -7,22 +7,23 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
- <!-- Extend your base template if you have one -->
+    <!-- Extend your base template if you have one -->
 
-	<a href="/projects">All Projects</a>
-	<a href="/qabugs">All Bugs</a>
-	<a href="/logout">Logout</a>
-
-{% block content %}
     <div class="mx-auto max-w-md p-6 bg-white rounded shadow-md mt-8">
-        <h2 class="text-2xl font-semibold mb-4">Create Bug</h2>
+        <div class="flex justify-between mb-4">
+            <a href="/projects" class="text-blue-500 hover:underline">All Projects</a>
+            <a href="/qabugs" class="text-blue-500 hover:underline">All Bugs</a>
+            <a href="/logout" class="text-blue-500 hover:underline">Logout</a>
+        </div>
+        <div class="mb-4">
+            <h2 class="text-2xl font-semibold">Create Bug</h2>
+        </div>
         <form method="post" action="/newbug" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="w-full bg-blue-500 text-white rounded py-2">Create Bug</button>
+            <button type="submit" class="w-full bg-blue-500 text-white rounded py-2 hover:bg-blue-700">Create Bug</button>
         </form>
     </div>
-{% endblock %}
 
 </body>
 </html>

@@ -3,7 +3,7 @@ from .views import signupForm, loginForm
 from .views import projectcreate, allproject, deleteproject,assigndeveloper, assigndeveloperdetail, logoutaccount
 from .views import editproject, createbug, reportbug, qa_bug_list
 from .views import edit_bug, delete_bug, assignqa, assignqadetail
-from .views import dischargedeveloperdetail, dischargedeveloper
+from .views import dischargedeveloperdetail, dischargedeveloper, dischargeqadetail, dischargeqa
 urlpatterns = [
     path('',allproject,name="home"),
     path('signupaccount',signupForm,name="signup form"),
@@ -15,6 +15,8 @@ urlpatterns = [
     path('assigndeveloper/<str:name>',assigndeveloper,name="assign developer"),
     path('dischargedeveloperdetail/<str:name>',dischargedeveloperdetail,name="discharge developer detail"),
     path('dischargedeveloper/<str:name>',dischargedeveloper,name="discharge developer"),
+    path('dischargeqadetail/<str:name>',dischargeqadetail,name="discharge qa detail"),
+    path('dischargeqa/<str:name>',dischargeqa,name="discharge qa"),
     path('edit/<str:name>/', editproject, name='editproject'),
     path('newbug',createbug,name="new bug"),
     path('reportbug/<str:name>',reportbug,name="project bug"),

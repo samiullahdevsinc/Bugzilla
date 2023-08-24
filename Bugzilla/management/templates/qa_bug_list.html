@@ -4,46 +4,54 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>QA Bug List</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-    <a href="/projects">All Projects</a>
-    <a href="/newbug">Report Bug</a>
-    <a href="/qabugs">All Bugs</a>
-    <a href="/logoutaccount">Logout</a>
-    <h2>Your Bug List</h2>
-    <table border="1">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Description</th>
-                <th>Type</th>
-                <th>Status</th>
-                <th>Start Date</th>
-                <th>Deadline</th>
-                <th>Project</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for bug in bugs %}
-            <tr>
-                <td>{{ bug.title }}</td>
-                <td>{{ bug.description }}</td>
-                <td>{{ bug.get_type_display }}</td>
-                <td>{{ bug.get_status_display }}</td>
-                <td>{{ bug.start_date }}</td>
-                <td>{{ bug.deadline }}</td>
-                <td>{{ bug.project.name }}</td>
-                <td>
-                    <a href="{% url 'edit bug' bug.id %}">Edit</a>
-                    <a href="{% url 'delete bug' bug.id %}">Delete</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-    {% if project %}
-        <a href="{% url 'project bug' project.name %}">Back to Project</a>
-    {% endif %}
+<body class="bg-gray-100">
+    <div class="mx-auto mr-3 ml-3 bg-white rounded shadow-md ">
+        <div class="flex justify-between m-12">
+            <div class="mt-8">
+                <a href="/projects" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">All Projects</a>
+                <a href="/newbug" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-700">Report Bug</a>
+                <a href="/qabugs" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-700">All Bugs</a>
+                <a href="/logoutaccount" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-700">Logout</a>
+            </div>
+            <h2 class="text-2xl font-semibold mt-8">Your Bug List</h2>
+        </div>
+        <table class="w-full border border-collapse ">
+            <thead class="bg-gray-200 text-gray-700">
+                <tr>
+                    <th class="py-2 px-4 border">Title</th>
+                    <th class="py-2 px-4 border">Description</th>
+                    <th class="py-2 px-4 border">Type</th>
+                    <th class="py-2 px-4 border">Status</th>
+                    <th class="py-2 px-4 border">Start Date</th>
+                    <th class="py-2 px-4 border">Deadline</th>
+                    <th class="py-2 px-4 border">Project</th>
+                    <th class="py-2 px-4 border">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for bug in bugs %}
+                <tr>
+                    <td class="py-2 px-4 border">{{ bug.title }}</td>
+                    <td class="py-2 px-4 border">{{ bug.description }}</td>
+                    <td class="py-2 px-4 border">{{ bug.get_type_display }}</td>
+                    <td class="py-2 px-4 border">{{ bug.get_status_display }}</td>
+                    <td class="py-2 px-4 border">{{ bug.start_date }}</td>
+                    <td class="py-2 px-4 border">{{ bug.deadline }}</td>
+                    <td class="py-2 px-4 border">{{ bug.project.name }}</td>
+                    <td class="py-2 px-4 border space-x-2">
+                        <a href="{% url 'edit bug' bug.id %}" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">Edit</a>
+                        <a href="{% url 'delete bug' bug.id %}" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700">Delete</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% if project %}
+        <a href="{% url 'project bug' project.name %}" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 block hover:bg-blue-700">Back to Project</a>
+        {% endif %}
+    </div>
 </body>
 </html>

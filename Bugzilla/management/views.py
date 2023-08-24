@@ -125,7 +125,7 @@ def projectcreate(request):
             new_project = Project(name=request.POST['name'],managers=user)
             new_project.save()
             message="Create Project successfully"
-            return redirect('/createproject',{"message":message})
+            return redirect('/projects',{"message":message})
         else:
             return render(request,'notaccess.html')
     elif request.method == "GET":
@@ -188,6 +188,21 @@ def dischargedeveloper(request, name):
         developer = userProfile.objects.get(username=developer_username)
         project.developer.remove(developer)
         return redirect('/projects')
+
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+def dischargeqadetail(request, name):
+    project = Project.objects.get(name=name)
+    assigned_qas = project.qa.all()
+    return render(request, 'dischargeqa.html', {"project": project, 'assigned_qas': assigned_qas})
+
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+def dischargeqa(request, name):
+    if request.method == 'POST':
+        project = Project.objects.get(name=name)
+        qa_username = request.POST['qa']
+        qa = userProfile.objects.get(username=qa_username)
+        project.qa.remove(qa)
+        return redirect('/projects')        
 
 
 
