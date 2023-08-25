@@ -17,6 +17,18 @@ from .forms.createbug import CreateBugForm
 from django.contrib.auth.decorators import user_passes_test
 # Create your views here.
 
+def is_qa_user(user):
+    user_profile = userProfile.objects.get(username=user)
+    return user_profile.user_type == 'qa'
+
+def is_developer_user(user):
+    user_profile = userProfile.objects.get(username=user)
+    return user_profile.user_type == 'developer'
+
+def is_manager_user(user):
+    user_profile = userProfile.objects.get(username=user)
+    return user_profile.user_type == 'manager'
+
 def signupForm(request):
 	if request.method == 'POST':
 		messages = ''
@@ -33,14 +45,21 @@ def signupForm(request):
 
 def loginForm(request):
     if request.method == 'POST':
-        form = LoginForm(request, data=request.POST)  # Pass the request to the form
+        form = LoginForm(request, data=request.POST)
         if form.is_valid():
             username = form.cleaned_data.get('username')
             password = form.cleaned_data.get('password')
-            user = authenticate(username=username,password =password)
+            user = authenticate(username=username, password=password)
             login(request, user)
-            messages.success(request, 'You have been successfully logged in.')
-            return redirect('/projects')
+            
+            user_profile = userProfile.objects.get(username=user.username)
+            if user_profile.user_type == 'manager':
+                return redirect('/projects')
+            elif user_profile.user_type == 'qa':
+                return redirect('/projectsq')
+            else:
+                return redirect('developer_bug_list')
+            
         else:
             messages.error(request, 'Invalid credentials. Please try again.')
     else:
@@ -50,25 +69,44 @@ def loginForm(request):
     return render(request, 'login.html', context)
 
 
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+def home(request):
+    user_profile = userProfile.objects.get(username=request.user)
+    if user_profile.user_type == 'manager':
+        return redirect('/projects')
+    elif user_profile.user_type == 'qa':
+        return redirect('/projectsq')
+    else:
+        return redirect('developer_bug_list')    
+
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_qa_user, login_url='/notaccess')
 def createbug(request):
     if request.method == 'POST':
         form = CreateBugForm(request.POST, request.FILES)
         if form.is_valid():
-            bug = form.save(commit=False)  # Create an instance of the Bug model but don't save it yet
-            bug.creator = request.user  # Assign the current logged-in user as the creator
-            bug.save()  # Now save the bug instance with the assigned creator
-            return redirect('qa_bug_list')  # Redirect to the projects list after bug creation
+            bug = form.save(commit=False)
+            bug.creator = request.user
+            bug.save()
+            return redirect('qa_bug_list')
     else:
+        # Customize the developer field choices to show only developers
+        developers = userProfile.objects.filter(user_type='developer')
         form = CreateBugForm()
+        form.fields['developer'].queryset = developers
 
     context = {'form': form}
     return render(request, 'createbug.html', context)
 
+
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_qa_user, login_url='/notaccess')
 def reportbug(request, name):
     project = get_object_or_404(Project, name=name)
+    
+    # Retrieve developers assigned to the project
+    assigned_developers = project.developer.all()
     
     if request.method == 'POST':
         form = ReportBugForm(request.POST, request.FILES)
@@ -81,10 +119,12 @@ def reportbug(request, name):
     else:
         form = ReportBugForm()
 
-    context = {'form': form, 'project': project}
+    context = {'form': form, 'project': project, 'assigned_developers': assigned_developers}
     return render(request, 'reportbug.html', context)
 
+
 @user_passes_test(lambda u: u.userprofile.user_type == 'qa', login_url='/loginaccount')
+@user_passes_test(is_qa_user, login_url='/notaccess')
 def qa_bug_list(request):
     user = request.user
     bugs = Bug.objects.filter(creator=user).order_by('-start_date')
@@ -95,7 +135,9 @@ def qa_bug_list(request):
     return render(request, 'qa_bug_list.html', {'bugs': bugs, 'project': project})
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_qa_user, login_url='/notaccess')
 def edit_bug(request, pk):
+
     bug = get_object_or_404(Bug, pk=pk)
     
     if request.method == 'POST':
@@ -107,19 +149,19 @@ def edit_bug(request, pk):
         form = EditBugForm(instance=bug)
     
     return render(request, 'edit_bug.html', {'form': form, 'bug': bug})
+  
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_qa_user, login_url='/notaccess')
 def delete_bug(request, pk):
     bug = get_object_or_404(Bug, pk=pk)
     bug.delete()
     return redirect('qa_bug_list')  # Redirect back to the QA bug list
 
-
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def projectcreate(request):
     user = request.user  # This is the logged-in users
-    user_profile = userProfile.objects.get(username=user.username)
-    user_type = user_profile.user_type
     if request.method == "POST":
         if user_type=='manager':
             new_project = Project(name=request.POST['name'],managers=user)
@@ -136,11 +178,11 @@ def projectcreate(request):
             return render(request, 'notaccess.html')
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
-def allproject(request):
+@user_passes_test(is_qa_user, login_url='/notaccess')
+def allprojectq(request):
     user = request.user
     user_profile = userProfile.objects.get(username=user.username)
     user_type = user_profile.user_type
-
     projects = Project.objects.all()  # Retrieve all projects
 
     context = {
@@ -150,20 +192,43 @@ def allproject(request):
 
     return render(request, 'projects.html', context)
 
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
+def allproject(request):
+    user = request.user
+    user_profile = userProfile.objects.get(username=user.username)
+    user_type = user_profile.user_type
+    if user_type=='manager':
+        projects = Project.objects.filter(managers=user_profile)  # Filter projects by the logged-in user
+
+        context = {
+            'projects': projects,
+            'user_type': user_type
+        }
+
+        return render(request, 'projects.html', context)
+    else:
+        return render(request,'notaccess.html')
+
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def deleteproject(request,name):
+
 	project = Project.objects.get(name=name)
 	project.delete()
 	return redirect('/projects')
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def assigndeveloperdetail(request, name):
     project = Project.objects.get(name=name)
     available_developers = userProfile.objects.filter(user_type='developer').exclude(projects=project)
     return render(request, 'assigndeveloper.html', {"project": project, 'users': available_developers})
 
+
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def assigndeveloper(request, name):
     if request.method == 'POST':
         project = Project.objects.get(name=name)
@@ -175,12 +240,14 @@ def assigndeveloper(request, name):
 
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def dischargedeveloperdetail(request, name):
     project = Project.objects.get(name=name)
     assigned_developers = project.developer.all()
     return render(request, 'dischargedeveloper.html', {"project": project, 'assigned_developers': assigned_developers})
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def dischargedeveloper(request, name):
     if request.method == 'POST':
         project = Project.objects.get(name=name)
@@ -189,32 +256,44 @@ def dischargedeveloper(request, name):
         project.developer.remove(developer)
         return redirect('/projects')
 
+
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def dischargeqadetail(request, name):
     project = Project.objects.get(name=name)
     assigned_qas = project.qa.all()
     return render(request, 'dischargeqa.html', {"project": project, 'assigned_qas': assigned_qas})
 
+
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def dischargeqa(request, name):
     if request.method == 'POST':
         project = Project.objects.get(name=name)
         qa_username = request.POST['qa']
         qa = userProfile.objects.get(username=qa_username)
         project.qa.remove(qa)
-        return redirect('/projects')        
+        return redirect('/projects')      
 
 
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_manager_user, login_url='/notaccess')
 def assignqadetail(request, name):
-    project = Project.objects.get(name=name)
-    available_qas = userProfile.objects.filter(user_type='qa').exclude(projectsq=project)
-    print(available_qas.values_list('username', flat=True))  
-    return render(request, 'assignqa.html', {"project": project, 'available_qas': available_qas})
+    user = request.user  # This is the logged-in users
+    user_profile = userProfile.objects.get(username=user.username)
+    user_type = user_profile.user_type
+    if user_type=='manager':  
+        project = Project.objects.get(name=name)
+        available_qas = userProfile.objects.filter(user_type='qa').exclude(projectsq=project)
+        print(available_qas.values_list('username', flat=True))  
+        return render(request, 'assignqa.html', {"project": project, 'available_qas': available_qas})
+    else:
+        return render(request,'notaccess.html')
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
-def assignqa(request, name):
+@user_passes_test(is_manager_user, login_url='/notaccess')
+def assignqa(request, name): 
     if request.method == 'POST':
         project = Project.objects.get(name=name)
         qa_username = request.POST['qa']
@@ -231,42 +310,78 @@ def logoutaccount(request):
 
 @login_required(login_url='/loginaccount', redirect_field_name="next")
 def editproject(request, name):
-    project = get_object_or_404(Project, name=name)
+    user = request.user  # This is the logged-in users
+    user_profile = userProfile.objects.get(username=user.username)
+    user_type = user_profile.user_type
+    if user_type=='manager':  
+        project = get_object_or_404(Project, name=name)
+        
+        if request.method == 'POST':
+            form = EditProjectForm(request.POST, instance=project)  # Pass the instance to update the existing project
+            if form.is_valid():
+                print("test")
+                form.save()
+                return redirect('/projects')  # Redirect to the projects list after editing
+        else:
+            form = EditProjectForm(instance=project)
 
-    if request.method == 'POST':
-        form = EditProjectForm(request.POST, instance=project)
-        if form.is_valid():
-            developers_selected = request.POST.getlist('developers')  # Get the selected developers
-            qa_selected = request.POST.getlist('qa')  # Get the selected QA members
-            
-            # Clear existing developer and QA assignments
-            project.developer.clear()
-            project.qa.clear()
-            
-            # Add the selected developers and QA members
-            for developer_username in developers_selected:
-                developer = userProfile.objects.get(username=developer_username)
-                project.developer.add(developer)
-            
-            for qa_username in qa_selected:
-                qa = userProfile.objects.get(username=qa_username)
-                project.qa.add(qa)
-            
-            form.save()
-            return redirect('/projects')  # Redirect to the projects list after editing
+        context = {
+            'form': form,
+            'project': project,
+        }
+        return render(request, 'editproject.html', context)
     else:
-        form = EditProjectForm(instance=project)
+        return render(request,'notaccess.html')
 
-    # Retrieve all developers and QA members
-    all_developers = userProfile.objects.filter(user_type='developer')
-    all_qas = userProfile.objects.filter(user_type='qa')
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_developer_user, login_url='/notaccess')
+def assign_bug_to_self(request, bug_id):
+    bug = get_object_or_404(Bug, id=bug_id)
+    # Check if the bug is in 'new' status and the user is assigned to the bug's project
+    if bug.status == 'new':
+        print("yes")
+        bug.status = 'started'
+        bug.developer = request.user
+        bug.save()
+        project_name = bug.project.name  # Get the project name
+        return redirect('developer_bug_list')  # Redirect to the developer's bug list with the project name
 
-    context = {
-        'form': form,
-        'project': project,
-        'all_developers': all_developers,
-        'all_qas': all_qas,
-    }
-    return render(request, 'editproject.html', context)
 
 
+
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_developer_user, login_url='/notaccess')
+def developer_bug_list(request):
+    user = request.user  # This is the logged-in users
+    user_profile = userProfile.objects.get(username=user.username)
+    user_type = user_profile.user_type
+    if user_type=='developer':
+        bugs = Bug.objects.filter(developer=user)
+        return render(request, 'developer_bug_list.html', {'bugs': bugs})
+    else:
+        return render(request, 'notaccess.html')
+
+
+@login_required(login_url='/loginaccount', redirect_field_name="next")
+@user_passes_test(is_developer_user, login_url='/notaccess')
+def resolve_bug_to_self(request, bug_id):
+    user = request.user  # This is the logged-in users
+    user_profile = userProfile.objects.get(username=user.username)
+    user_type = user_profile.user_type
+    if user_type=='developer':      
+        bug = get_object_or_404(Bug, id=bug_id)
+        # Check if the bug is in 'new' status and the user is assigned to the bug's project
+        if bug.status == 'started':
+            print("yes")
+            if bug.type == 'feature':
+                bug.status = 'completed'
+            else:
+                bug.status='resolved'
+            bug.developer = request.user
+            bug.save()
+            return redirect('developer_bug_list')  # Redirect to the developer's bug list
+    else:
+        return render(request, 'notaccess.html')  # Or any appropriate template
+
+def notaccess(request):
+    return render(request, 'notaccess.html')

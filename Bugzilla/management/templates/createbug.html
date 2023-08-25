@@ -4,16 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Create Bug</title>
+    <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 <body class="bg-gray-100">
-    <!-- Extend your base template if you have one -->
-
     <div class="mx-auto max-w-md p-6 bg-white rounded shadow-md mt-8">
         <div class="flex justify-between mb-4">
-            <a href="/projects" class="text-blue-500 hover:underline">All Projects</a>
-            <a href="/qabugs" class="text-blue-500 hover:underline">All Bugs</a>
-            <a href="/logout" class="text-blue-500 hover:underline">Logout</a>
+            <a href="/projectsq" class="text-blue-500 hover:underline">
+                <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">All Projects</button>
+            </a>
+            <a href="/qabugs" class="text-blue-500 hover:underline">
+                <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">All Bugs</button>
+            </a>
+            <a href="/logoutaccount" class="text-blue-500 hover:underline">
+                <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">Logout</button>
+            </a>
         </div>
         <div class="mb-4">
             <h2 class="text-2xl font-semibold">Create Bug</h2>
@@ -24,6 +29,5 @@
             <button type="submit" class="w-full bg-blue-500 text-white rounded py-2 hover:bg-blue-700">Create Bug</button>
         </form>
     </div>
-
 </body>
 </html>

@@ -11,7 +11,7 @@
     <div class="mx-auto mr-3 ml-3 bg-white rounded shadow-md ">
         <div class="flex justify-between m-12">
             <div class="mt-8">
-                <a href="/projects" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">All Projects</a>
+                <a href="/projectsq" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700 mt-4">All Projects</a>
                 <a href="/newbug" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-700">Report Bug</a>
                 <a href="/qabugs" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-700">All Bugs</a>
                 <a href="/logoutaccount" class="bg-blue-500 text-white px-4 py-2 rounded ml-4 hover:bg-blue-700">Logout</a>
@@ -45,6 +45,7 @@
                         <a href="{% url 'edit bug' bug.id %}" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">Edit</a>
                         <a href="{% url 'delete bug' bug.id %}" class="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-700">Delete</a>
                     </td>
+                    
                 </tr>
                 {% endfor %}
             </tbody>

@@ -4,18 +4,44 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Report Bug</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body>
-	<a href="/projects">All Projects</a>
-	<a href="/newbug">Report New Bug</a>
-	<a href="/qabugs">All Bugs</a>
-	<a href="/logout">Logout</a>
-    <h2>Report Bug for {{ project.name }}</h2>
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Report Bug</button>
-    </form>
-    <a href="{% url 'project bug' project.name %}">Back to Project</a>
+<body class="bg-gray-100">
+    <div class="mx-auto max-w-xl p-4 bg-white rounded shadow-md mt-8">
+        <div class="flex justify-between m-4">
+            <div>
+                <a href="/projects" class="text-blue-500 hover:underline m-2">
+                    <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">All Projects</button>
+                </a>
+                <a href="/newbug" class="text-blue-500 hover:underline m-2">
+                    <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">Report New Bug</button>
+                </a>
+                <a href="/qabugs" class="text-blue-500 hover:underline m-2">
+                    <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">All Bugs</button>
+                </a>
+                <a href="/logoutaccount" class="text-blue-500 hover:underline m-2">
+                    <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">Logout</button>
+                </a>
+            </div>
+        </div>
+        <h2 class="text-2xl font-semibold mb-4">Report Bug for {{ project.name }}</h2>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="mb-4">
+                <label for="id_developer" class="block text-gray-700 text-sm font-bold mb-2">Assigned Developer:</label>
+                <select id="id_developer" name="developer" class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
+                    {% for developer in assigned_developers %}
+                        <option value="{{ developer.username }}">{{ developer.get_full_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 text-white rounded py-2">Report Bug</button>
+        </form>
+        <a href="{% url 'project bug' project.name %}" class="text-blue-500 hover:underline mt-4 block">
+            <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">Back to Project</button>
+        </a>
+    </div>
 </body>
 </html>

@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex justify-between mb-4 mt-4">
+    <h2 class="text-2xl font-semibold ml-4">Your Assigned Bugs</h2>
+    <a href="/logoutaccount" class="text-blue-500 hover:underline">
+        <button class="bg-blue-500 text-white rounded px-4 py-2 mr-4 hover:bg-blue-700">Logout</button>
+    </a>
+</div>
+<div class="flex flex-col md:flex-row">
+    <div class="overflow-x-auto md:w-1/2 mb-4 md:mb-0">
+        <table class="min-w-full bg-white border rounded-lg">
+            <thead>
+                <tr class="bg-gray-100">
+
+                    <th class="px-6 py-3 text-left">Project Name</th>
+                    <th class="px-6 py-3 text-left">Title</th>
+                    <th class="px-6 py-3 text-left">Status</th>
+                    <th class="px-6 py-3 text-left">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                {% for bug in bugs %}
+                <tr class="{{ 'bg-white' }}">
+                    <td class="px-6 py-4">{{ bug.project.name }}</td>
+                    <td class="px-6 py-4">{{ bug.title }}</td>
+                    <td class="px-6 py-4">{{ bug.status }}</td>
+                    <td class="px-6 py-4">
+                        {% if bug.status == 'new' %}
+                        <a href="{% url 'assign_bug_to_self' bug.id %}" class="px-3 py-1 text-sm text-white bg-blue-500 rounded-full hover:bg-blue-600">Start Working</a>
+                        {% endif %}
+                        {% if bug.status == 'started' and bug.type == 'bug' %}
+                        <a href="{% url 'resolve_bug_to_self' bug.id %}" class="px-3 py-1 text-sm text-white bg-green-500 rounded-full hover:bg-green-600">Resolved Bug</a>
+                        {% elif bug.status == 'started' and bug.type == 'feature' %}
+                        <a href="{% url 'resolve_bug_to_self' bug.id %}" class="px-3 py-1 text-sm text-white bg-green-500 rounded-full hover:bg-green-600">Complete Feature</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
