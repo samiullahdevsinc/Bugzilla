@@ -15,7 +15,8 @@ from .models import userProfile
 from django.urls import reverse_lazy
 from .forms.createbug import CreateBugForm
 from django.contrib.auth.decorators import user_passes_test
-# Create your views here.
+
+
 
 def is_qa_user(user):
     user_profile = userProfile.objects.get(username=user)
@@ -36,6 +37,7 @@ def signupForm(request):
 		if form.is_valid():
 			user = form.save()
 			messages = "User Created successfully"
+			return redirect('/loginaccount')
 		else:
 			messages = "User Creation Failed"
 	else:
@@ -61,11 +63,12 @@ def loginForm(request):
                 return redirect('developer_bug_list')
             
         else:
-            messages.error(request, 'Invalid credentials. Please try again.')
+            messages='Invalid credentials. Please try again'
     else:
         form = LoginForm()
+        messages=""
 
-    context = {'form': form}
+    context = {'form': form, "messages":messages}
     return render(request, 'login.html', context)
 
 
@@ -115,7 +118,7 @@ def reportbug(request, name):
             bug.creator = request.user
             bug.project = project  # Assign the selected project to the bug
             bug.save()
-            return redirect('qa_bug_list')  # Redirect to the projects list after bug creation
+            return redirect('qa_bug_list') 
     else:
         form = ReportBugForm()
 
@@ -162,6 +165,8 @@ def delete_bug(request, pk):
 @user_passes_test(is_manager_user, login_url='/notaccess')
 def projectcreate(request):
     user = request.user  # This is the logged-in users
+    user_profile = userProfile.objects.get(username=user.username)
+    user_type = user_profile.user_type
     if request.method == "POST":
         if user_type=='manager':
             new_project = Project(name=request.POST['name'],managers=user)

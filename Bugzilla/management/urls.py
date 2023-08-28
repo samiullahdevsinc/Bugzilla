@@ -5,6 +5,8 @@ from .views import editproject, createbug, reportbug, qa_bug_list
 from .views import edit_bug, delete_bug, assignqa, assignqadetail, allprojectq
 from .views import dischargedeveloperdetail, dischargedeveloper, dischargeqadetail, dischargeqa
 from .views import developer_bug_list, assign_bug_to_self, home, resolve_bug_to_self, notaccess
+from django.conf.urls import handler404
+
 urlpatterns = [
     path('signupaccount',signupForm,name="signup form"),
     path('loginaccount',  loginForm,name="login form"),
@@ -21,7 +23,6 @@ urlpatterns = [
     path('dischargeqadetail/<str:name>',dischargeqadetail,name="discharge qa detail"),
     path('dischargeqa/<str:name>',dischargeqa,name="discharge qa"),
     path('edit/<str:name>/', editproject, name='editproject'),
-    path('newbug',createbug,name="new bug"),
     path('reportbug/<str:name>',reportbug,name="project bug"),
     path('qabugs/', qa_bug_list, name="qa_bug_list"),
     path('editbug/<uuid:pk>', edit_bug, name='edit bug'),
@@ -35,3 +36,9 @@ urlpatterns = [
 
 
 ]
+
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
+
+handler404 = custom_404_view

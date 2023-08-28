@@ -8,13 +8,14 @@
     </a>
 </div>
 <div class="flex flex-col md:flex-row">
-    <div class="overflow-x-auto md:w-1/2 mb-4 md:mb-0">
+    <div class="">
         <table class="min-w-full bg-white border rounded-lg">
             <thead>
                 <tr class="bg-gray-100">
 
                     <th class="px-6 py-3 text-left">Project Name</th>
                     <th class="px-6 py-3 text-left">Title</th>
+                    <th class="px-6 py-3 text-left">Bug Image</th>
                     <th class="px-6 py-3 text-left">Status</th>
                     <th class="px-6 py-3 text-left">Actions</th>
                 </tr>
@@ -25,8 +26,9 @@
                 <tr class="{{ 'bg-white' }}">
                     <td class="px-6 py-4">{{ bug.project.name }}</td>
                     <td class="px-6 py-4">{{ bug.title }}</td>
+                    <td class="py-2 px-4 border"><a href="https://res.cloudinary.com/dezbmg79a/image/upload/v1693215658/{{ bug.screenshot }}" style="color:red" target="_blank"> Click Here</a></td>
                     <td class="px-6 py-4">{{ bug.status }}</td>
-                    <td class="px-6 py-4">
+                    <td class="">
                         {% if bug.status == 'new' %}
                         <a href="{% url 'assign_bug_to_self' bug.id %}" class="px-3 py-1 text-sm text-white bg-blue-500 rounded-full hover:bg-blue-600">Start Working</a>
                         {% endif %}

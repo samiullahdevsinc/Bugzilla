@@ -27,6 +27,7 @@
                     <th class="py-2 px-4 border">Status</th>
                     <th class="py-2 px-4 border">Start Date</th>
                     <th class="py-2 px-4 border">Deadline</th>
+                    <th class="py-2 px-4 border">Image</th>
                     <th class="py-2 px-4 border">Project</th>
                     <th class="py-2 px-4 border">Actions</th>
                 </tr>
@@ -40,6 +41,7 @@
                     <td class="py-2 px-4 border">{{ bug.get_status_display }}</td>
                     <td class="py-2 px-4 border">{{ bug.start_date }}</td>
                     <td class="py-2 px-4 border">{{ bug.deadline }}</td>
+                    <td class="py-2 px-4 border"><a href="https://res.cloudinary.com/dezbmg79a/image/upload/v1693215658/{{ bug.screenshot }}" style="color:red" target="_blank"> Click Here</a></td>
                     <td class="py-2 px-4 border">{{ bug.project.name }}</td>
                     <td class="py-2 px-4 border space-x-2">
                         <a href="{% url 'edit bug' bug.id %}" class="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-700">Edit</a>
@@ -50,9 +52,6 @@
                 {% endfor %}
             </tbody>
         </table>
-        {% if project %}
-        <a href="{% url 'project bug' project.name %}" class="bg-blue-500 text-white px-4 py-2 rounded mt-4 block hover:bg-blue-700">Back to Project</a>
-        {% endif %}
     </div>
 </body>
 </html>

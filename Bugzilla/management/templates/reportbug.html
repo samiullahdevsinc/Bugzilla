@@ -14,9 +14,6 @@
                 <a href="/projects" class="text-blue-500 hover:underline m-2">
                     <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">All Projects</button>
                 </a>
-                <a href="/newbug" class="text-blue-500 hover:underline m-2">
-                    <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">Report New Bug</button>
-                </a>
                 <a href="/qabugs" class="text-blue-500 hover:underline m-2">
                     <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">All Bugs</button>
                 </a>
@@ -28,20 +25,31 @@
         <h2 class="text-2xl font-semibold mb-4">Report Bug for {{ project.name }}</h2>
         <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
-            {{ form.as_p }}
+            <label>Title</label>
+            {{ form.title }} <br>
+            <label>Description</label>
+            {{form.description}}<br>
+            <label>Image</label>
+            {{form.screenshot}}<br>
+            <label>Type</label>
+            {{form.type}}<br>
+            <label>Status</label>
+            {{form.status}}<br>
+            <label>Start Date</label>
+            {{form.start_date}}<br>
+            <label>Deadline</label>
+            {{form.deadline}}<br>
             <div class="mb-4">
                 <label for="id_developer" class="block text-gray-700 text-sm font-bold mb-2">Assigned Developer:</label>
                 <select id="id_developer" name="developer" class="w-full border rounded px-3 py-2 focus:outline-none focus:border-blue-500">
                     {% for developer in assigned_developers %}
-                        <option value="{{ developer.username }}">{{ developer.get_full_name }}</option>
+                    <option value="{{ developer.username }}">{{ developer.get_full_name }}</option>
                     {% endfor %}
                 </select>
             </div>
             <button type="submit" class="w-full bg-blue-500 text-white rounded py-2">Report Bug</button>
         </form>
-        <a href="{% url 'project bug' project.name %}" class="text-blue-500 hover:underline mt-4 block">
-            <button class="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-700">Back to Project</button>
-        </a>
+
     </div>
 </body>
 </html>
